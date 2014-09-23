@@ -1,0 +1,35 @@
+# kill any previous instances
+kill -9 $(ps -ef | grep mayankn | grep torrent | awk '{print $2}') &> /dev/null
+
+# prepare all the clients first
+(cd SelfishBitTorrent/;make clean;rm *.log out*;make;
+cd ../leecher1;make clean;rm *.log out*;make;
+cd ../leecher2;make clean;rm *.log out*;make;) &> /dev/null
+
+# execute all the clients simultaneously
+(cd SelfishBitTorrent/
+java -jar snark.jar --no-commands --debug 6 http://129.10.117.100:6999/38eaacf62ada0094ea0046da73fe593164e6459b.torrent &> out) &
+(cd leecher1/
+java -jar snark.jar --no-commands http://129.10.117.100:6999/38eaacf62ada0094ea0046da73fe593164e6459b.torrent &> out) &
+(cd leecher2/
+java -jar snark.jar --no-commands http://129.10.117.100:6999/38eaacf62ada0094ea0046da73fe593164e6459b.torrent &> out) &
+
+#wait
+
+# displaying outputs
+echo "SelfishBitTorrent"
+#tail SelfishBitTorrent/out &> /dev/null | grep "Completed download"
+(sed '/Completed download/ q' <( exec tail -n +0 -f SelfishBitTorrent/out); kill $! 2> /dev/null) 2> /dev/null | grep "Completed download"
+#sh -c 'tail -n +0 -f SelfishBitTorrent/out1 | { sed "/Completed download/ q" ;}' | grep "Completed download"
+echo "leecher1"
+#tail leecher1/out &> /dev/null | grep "Completed download"
+(sed '/Completed download/ q' <( exec tail -n +0 -f leecher1/out); kill $! 2> /dev/null) 2> /dev/null | grep "Completed download"
+#sh -c 'tail -n +0 -f leecher1/out2 | { sed "/Completed download/ q" ;}' | grep "Completed download"
+echo "leecher2"
+#tail leecher2/out &> /dev/null | grep "Completed download"
+(sed '/Completed download/ q' <( exec tail -n +0 -f leecher2/out); kill $! 2> /dev/null) 2> /dev/null | grep "Completed download"
+#sh -c 'tail -n +0 -f ../leecher2/out3 | { sed "/Completed download/ q" ;}' | grep "Completed download"
+
+# clean up processes
+#wait
+kill -9 $(ps -ef | grep mayankn | grep torrent | awk '{print $2}') &> /dev/null

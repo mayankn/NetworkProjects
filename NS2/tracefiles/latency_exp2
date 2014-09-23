@@ -1,0 +1,26 @@
+#!/bin/bash
+
+for i in {1..11}
+do
+	echo "CBR: " $i "Mbps"
+	ns ../tclfiles/ns_exp2.tcl TCP/Reno TCP/Reno $i
+	echo "Reno-Reno-N1->N4"
+	awk -v from=0 -v to=3 -v flow=1 -v source=0.0 -v destination=3.0 -f ns_trace_latency.awk exp2_output.tr
+	echo "Reno-Reno-N5->N6"
+        awk -v from=4 -v to=5 -v flow=2 -v source=4.0 -v destination=5.0 -f ns_trace_latency.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Newreno TCP/Reno $i
+        echo "NewReno-Reno-N1->N4"
+        awk -v from=0 -v to=3 -v flow=1 -v source=0.0 -v destination=3.0 -f ns_trace_latency.awk exp2_output.tr
+	echo "NewReno-Reno-N5->N6"
+	awk -v from=4 -v to=5 -v flow=2 -v source=4.0 -v destination=5.0 -f ns_trace_latency.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Vegas TCP/Vegas $i
+        echo "Vegas-Vegas-N1->N4"
+        awk -v from=0 -v to=3 -v flow=1 -v source=0.0 -v destination=3.0 -f ns_trace_latency.awk exp2_output.tr
+	echo "Vegas-Vegas-N5->N6"
+	awk -v from=4 -v to=5 -v flow=2 -v source=4.0 -v destination=5.0 -f ns_trace_latency.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Newreno TCP/Vegas $i
+        echo "NewReno-Vegas-N1->N4"
+        awk -v from=0 -v to=3 -v flow=1 -v source=0.0 -v destination=3.0 -f ns_trace_latency.awk exp2_output.tr
+	echo "NewReno-Vegas-N5->N6"
+	awk -v from=4 -v to=5 -v flow=2 -v source=4.0 -v destination=5.0 -f ns_trace_latency.awk exp2_output.tr
+done

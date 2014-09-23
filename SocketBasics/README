@@ -1,0 +1,170 @@
+--------------------------------------------------------------------------------------------------------
+README file for Project 1: Socket Basics : CS5700-Network Fundamentals; by team KPN-MN Sep 17 2013
+--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------
+
+This file contains information about how the solution was developed & implemented, and the challenges faced. 
+It also contains details about how the solution was tested for perfection.
+
+The following information is summarized below:
+
+A) Problem Description
+
+B) Programming Language and Applications used
+
+C) Solution Breakdown
+
+D) Challenges
+
+E) Code Testing
+---------------------------------------------------------------------------------------------------------
+A - Problem Description
+--------------------------------------------------------------------------------------------------------- 
+* A client program that communicates with a remote server using TCP sockets. The server and client 
+interact through simple messages:
+	1) HELLO
+	2) STATUS
+	3) SOLUTION
+	4) BYE
+* The client first establishes a socket connection(either a secure SSL Socket or a normal socket, 
+based on the command line parameter option given during the client execution)
+* The client sends a HELLO Message to the server
+* The server responds with a STATUS message, followed by a Mathematical expression
+* The client will solve the Mathematical expression and returns the SOLUTION to the server 
+and waits for the server to send more such expressions to solve.
+* The client performs operations until it receives a BYE message from the server along with
+a secret flag
+* The connection with the server is terminated when the client successfully reads the secret flag sent by 
+the server.
+
+-- Note -- : The secret flag is a unique code for each user delivered by the server based on the user id,
+          in this case the NEU id provided during client execution. 
+
+-----------------------------------------------------------------------------------------------------------
+B - Programming Language and Applications used
+-----------------------------------------------------------------------------------------------------------
+
+**-- The Programming Language used for the implementation of this project is JAVA(JDK 6) --**
+
+Applications used:
+	1) Eclipse   - Integrated Development ToolKit was used as the base workspace environment
+	2) FileZilla - Open source FTP Client used to connect to the remote server and transfer project files
+	3) PuTTy     - Used as the Terminal Emulator to run the program from the host machine.
+
+-----------------------------------------------------------------------------------------------------------
+C - Solution Breakdown
+-----------------------------------------------------------------------------------------------------------
+
+1) The client connects to the server through a secure socket connection (SSL Sockets) or a normal socket.
+
+	* In the case of the SSL socket, the following steps are followed:
+		- The server's security certificate is pre-installed in the client directory by executing an
+		  open source code (InstallCert.java) as follows:
+		  java InstallCert [hostname]
+		  This attempts to create an SSL socket with the server and then downloads the server's
+		  self-signed security certificate to a Java Trust Store file
+		- Before making the SSL connection the program sets the path of the Java Trust Store
+		- Then the SSL socket is opened and a handshake is requested for
+	* In the case of a normal socket, the program simply tries to open a TCP socket connection with
+	  the server.
+Both the approaches take the InetAddress of the host as input so as to automatically resolve the
+IP address to the hostname and vice-versa depending on the type of input given at the command line.
+
+
+2) The command for execution of the client program is given in the format:
+
+	* $ ./client <-p port> <-s> [hostname] [NEU ID]
+			
+			-p port  : server port number : '27993' for normal sockets,'27994' for SSL sockets
+				   (optional port)
+
+			-s	 : Confirms SSL Socket implementation
+				   (optional port)
+	
+			hostname : server machine name : cs5700f12.ccs.neu.edu
+
+			NEU ID   : unique id for each student in the project team.
+	* The program switches between normal sockets and SSL sockets by parsing the command line arguments
+	  If there is a <-s> in the arguments then it follows SSl Implementation.
+	  If there is a <-p> followed by a port number then the socket connection is overridden to use that port
+			
+
+3) After successfully creating a socket connection with the server the Client sends a HELLO Message in the format:
+
+	* cs5700fall2013 HELLO [NEU ID]\n
+		
+4) The server response with a STATUS Message in the format:
+
+	* cs5700fall2013 STATUS [operand] [operator] [operand]\n
+
+		- operand : any number between 1 to 1000
+
+		- operator: any basic Arthematic Operator( '+','-','*','/' )
+
+5) The Server response is programmatically parsed to see if the response STRICTLY follows the above format.
+   The client continues only if the response is exactly as expected.
+   After parsing the response, the mathematical operator is identified and the corresponding arithmetic operation
+   is performed on the given operands.
+   The solution of the mathematical expression is computed and then returned to the server as follows:
+
+	* cs5700fall2013 [the mathematical solution]\n
+
+6) The above step is executed repeatedly till the server sends a BYE message in the following format:
+
+	* cs5700fall2013 [a 64 byte secret flag] BYE
+
+   Once a 'BYE' is spotted in the server response, the program checks to see if the response contains a 64-byte string
+   If this string is present then it prints the secret flag to the screen and exits gracefully, else it is forced to exit
+   due to an incorrect/invalid NEU ID provided in the command line argument during client execution.
+   Each NEU ID has two sets of unique secret flags. One for normal socket connection and another for SSL socket.
+
+7) The socket and data streams used to communicate with the server are closed once the server returns 
+   the BYE Message and the program is terminated.
+
+---------------------------------------------------------------------------------------------------------------
+D - Challenges
+---------------------------------------------------------------------------------------------------------------
+
+1) Figuring out how the server has been programmed to accept secure sockets
+
+2) Finding a way to make the client securely authenticate with the server
+
+3) Downloading the server's certificate to a Java Trust Store
+
+4) Figuring out a way to switch off certificate validation in the code
+
+These challenges were overcome by choosing the approach of downloading and storing the server's certificate in
+the client directory and then using that certificate to complete the SSL handshake
+
+----------------------------------------------------------------------------------------------------------------
+E - Code Testing
+----------------------------------------------------------------------------------------------------------------
+
+* The entire code is written in a defensive manner as it involves communication through sockets.
+
+* A check has been put in place in the program to ensure the connection is established with the correct server machine.	
+	
+* Both SSL sockets and normal sockets are vulnerable to loosing connection with the host machine. A check is put in
+  place in the program to verify whether the connection is intact, throughout the execution.
+
+* A Test is performed to verify whether the response from the server is a valid response that adheres to the format specified.
+
+* A Test to verify whether the operator returned by the server is a valid operator for every STATUS message. 
+
+* A Test to check whether the server returns an 'Unknown_Husky_ID' message is made to ensure the client is 
+  provided with a valid husky id in the command line argument.
+* The following exhaustive scenarios were tested agains the client program and ensured that it works well:
+	./client -p 27993 -s hostname nuid
+	./client -p 27993 hostname nuid
+	./client -p -s hostname nuid 
+	./client 27993 -s hostname nuid
+	./client -s hostname nuid
+	./client hostname nuid
+* The program exits gracefully with an error message during the following scenarios:
+	- Incorrect/Insufficient command-line parameters given
+	- Invalid operator given by the server in the STATUS message
+	- Incorrect/Invalid format of the server response which is not as per given specification
+	- Unkwown/Incorrect Husky ID provided in the command-line arguments
+	- Error while creating the socket (host or port issues)
+	- An incorrect port is specified in the arguments on which the server is not listening on
+	- Any read() operation takes more than 60 seconds

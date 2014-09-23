@@ -1,0 +1,31 @@
+The Hunting of the Snark Project - Copyright (C) 2003 Mark J. Wielaard, (c) 2006 Three Rings Design
+
+Snark comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+you are welcome to redistribute it under certain conditions; read the
+COPYING file for details.
+
+Dec 3, 2013 9:56:03 PM org.klomp.snark.Snark setupNetwork
+INFO: MetaInfo[info_hash='38eaacf62ada0094ea0046da73fe593164e6459b', announce='http://129.10.117.100:6999/announce', name='test.log', files=null, #pieces='400', piece_length='262144', length='104857600']
+Dec 3, 2013 9:56:03 PM org.klomp.snark.Storage check
+INFO: Creating/Checking file: test.log
+................................................................................................................................................................................................................................................................................................................................................................................................................
+Dec 3, 2013 9:56:03 PM org.klomp.snark.cmd.ConsoleStorageReporter storageAllocated
+INFO: Finished allocating storage space
+.
+Dec 3, 2013 9:56:03 PM org.klomp.snark.cmd.ConsoleStorageReporter storageAllocated
+INFO: Finished allocating storage space
+Dec 3, 2013 9:56:03 PM org.klomp.snark.Snark collectPieces
+INFO: Started download at : 2013-12-03 21:56:03.616
+Dec 3, 2013 9:56:20 PM org.klomp.snark.PeerCoordinator gotPiece
+INFO: Completed download in : 16.478388149 seconds
+Dec 3, 2013 9:56:20 PM org.klomp.snark.SnarkShutdown run
+INFO: Shutting down...
+Dec 3, 2013 9:56:20 PM org.klomp.snark.ConnectionAcceptor run
+SEVERE: Error while accepting
+java.net.SocketException: Socket closed
+	at java.net.PlainSocketImpl.socketAccept(Native Method)
+	at java.net.AbstractPlainSocketImpl.accept(AbstractPlainSocketImpl.java:375)
+	at java.net.ServerSocket.implAccept(ServerSocket.java:478)
+	at java.net.ServerSocket.accept(ServerSocket.java:446)
+	at org.klomp.snark.ConnectionAcceptor.run(ConnectionAcceptor.java:91)
+	at java.lang.Thread.run(Thread.java:701)

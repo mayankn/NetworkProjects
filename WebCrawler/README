@@ -1,0 +1,98 @@
+--------------------------------------------------------------------------------------------------------
+README file for Project 2: Web Crawler : CS5700-Network Fundamentals; by team KPN-MN Oct 02 2013
+--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------
+
+This file contains information about how the solution was developed & implemented, and the challenges faced. 
+It also contains details about how the solution was tested for perfection.
+
+The following information is summarized below:
+
+A) Problem Description
+
+B) Programming Language and Applications used
+
+C) Solution Breakdown
+
+D) Challenges
+
+E) Code Testing
+---------------------------------------------------------------------------------------------------------
+A - Problem Description
+--------------------------------------------------------------------------------------------------------- 
+* A web crawler that implements the HTTP protocol to crawl web pages of the website: cs5700.ccs.neu.edu/fakebook
+* The crawler must crawl pages on the site and gather data from it
+* A username password is input to the program which is used to authenticate with the server
+
+-- Note -- : The secret flags are unique for each username password combination
+
+-----------------------------------------------------------------------------------------------------------
+B - Programming Language and Applications used
+-----------------------------------------------------------------------------------------------------------
+
+**-- The Programming Language used for the implementation of this project is JAVA(JDK 6) --**
+
+Applications used:
+	1) Eclipse   - Integrated Development ToolKit was used as the base workspace environment
+	2) FileZilla - Open source FTP Client used to connect to the remote server and transfer project files
+	3) PuTTy     - Used as the Terminal Emulator to run the program from the host machine.
+
+-----------------------------------------------------------------------------------------------------------
+C - Solution Breakdown
+-----------------------------------------------------------------------------------------------------------
+
+1) The client connects to the server through a socket connection
+
+2) The command for execution of the client program is given in the format:
+
+	* $ ./webcrawler [username] [password]
+			
+3) After successfully creating a socket connection with the server the Client requests for the login page of fakebook with a GET request:
+
+	* GET /accounts/login/ HTTP/1.1\n
+		
+4) The server's response is read by the client and then it sends a POST request
+
+	* In the POST request the client sends the username password and the secret csrf token, along with the cookie that the server sets in the response of the login page
+
+5) The Server response to the POST request is programmatically parsed to see if the server was able to successfully authorize the client:
+
+	* If all went well then the server will send the same cookie back and the HTTP status code would 302
+	* Once the client sees a HTTP 302 status, it will redirect to the location in Location header of the server response
+	* After the redirect the client successfully GETs the profile page of the username entered
+	* If the server responds with a HTTP 403/404/500 status the client ignores the response or tries again
+
+6) Once the fakebook profile page is obtained, the client uses JSoup, a HTML parser to parse through the link tags in the HTML body:
+
+	* The parsed link tags are all added to the frontier
+	* Each unique link in the frontier is then parsed recursively
+	* During each parse the HTML body is checked for the presence of the secret_flag, if it is present the secret_flag is added to a set
+
+7) The visited links are placed into a visited set and the links from the frontier which are yet to be visited are placed onto a to-be-visited set
+
+8) The exits when it has found 5 secret_flags for the given username password combination
+
+---------------------------------------------------------------------------------------------------------------
+D - Challenges
+---------------------------------------------------------------------------------------------------------------
+
+1) Figuring out how the server was responding over HTTP/1.1
+
+
+2) Figuring out how to correctly authorize the client with the server
+
+3) Ways to parse the links efficiently and also maintain a list of links to parse
+
+----------------------------------------------------------------------------------------------------------------
+E - Code Testing
+----------------------------------------------------------------------------------------------------------------
+
+* The entire code is written in a defensive manner as it involves communication through sockets.
+
+* A check has been put in place in the program to ensure the connection is established with the correct server machine.	
+	
+* A Test is performed to verify that there are enough number of arguments provided at the command line
+
+* The program checks to see if the username password provided is valid
+
+* The program checks the server's response to see whether it is sending chunked responses or complete response. If it receives chunked responses, the client decodes the chunked transfer-encoding of the server and then reads the entire combined response after putting together all the received chunks

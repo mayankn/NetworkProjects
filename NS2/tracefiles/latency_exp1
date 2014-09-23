@@ -1,0 +1,18 @@
+#!/bin/bash
+
+for i in {1..10}
+do
+	echo "CBR: " $i "Mbps"
+	ns ../tclfiles/ns_exp1.tcl TCP $i
+	echo "tcp"
+	awk -v flow=1 -v from=0 -v to=3 -v source=0.0 -v destination=3.0 -f ns_trace_latency.awk exp1_output.tr
+	ns ../tclfiles/ns_exp1.tcl TCP/Reno $i
+        echo "reno"
+	awk -v flow=1 -v from=0 -v to=3 -v source=0.0 -v destination=3.0 -f ns_trace_latency.awk exp1_output.tr
+	ns ../tclfiles/ns_exp1.tcl TCP/Newreno $i
+        echo "newreno"
+	awk -v flow=1 -v from=0 -v to=3 -v source=0.0 -v destination=3.0 -f ns_trace_latency.awk exp1_output.tr
+	ns ../tclfiles/ns_exp1.tcl TCP/Vegas $i
+   	echo "vegas"
+	awk -v flow=1 -v from=0 -v to=3 -v source=0.0 -v destination=3.0 -f ns_trace_latency.awk exp1_output.tr
+done

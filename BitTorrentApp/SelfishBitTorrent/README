@@ -1,0 +1,60 @@
+--------------------------------------------------------------------------------------------------------
+README file for Project 5: Selfish BitTorrent Client : CS5700-Network Fundamentals; by team KPN-MN Dec 04 2013
+--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------
+
+This file contains information about the optimisations made to the default Snark code 
+to improve the overall download rate by implementing various cheating mechanisms.
+
+The following information is summarized below:
+
+A) Problem Description
+
+B) Programming Language and Applications used
+
+C) Optimisations Implemented
+
+---------------------------------------------------------------------------------------------------------
+A - Problem Description
+--------------------------------------------------------------------------------------------------------- 
+* To increase the performance of Snark, an open-source java based BitTorrent client by employing various cheats.
+-----------------------------------------------------------------------------------------------------------
+B - Programming Language and Applications used
+-----------------------------------------------------------------------------------------------------------
+
+Applications used:
+	1) Eclipse   - the IDE used for understanding Snark and easily making code changes at various places
+	2) FileZilla - Open source FTP Client used to connect to the remote server and transfer project files
+
+-----------------------------------------------------------------------------------------------------------
+C - Optimisations Implemented
+-----------------------------------------------------------------------------------------------------------
+
+Offensive / Aggressive tactics :-
+
+1) Sybil attack - Created 3 additional sybil peers from within the program to leech the file at thrice the rate
+
+2) No Free Piece - Unchoke a peer only if that peer is interesting to us and thereby not giving away any free pieces to leechers who do not have 
+any pieces to share with us
+
+3) Advertise Fake Pieces - Advertise and send fake pieces to peers even if we dont actually have that requested piece (implemented, but commented out later on in hindsight)
+
+4) Reduced Round Interval - Reduced each round interval from the default 20 seconds to 5 seconds to aggressively punish misbehaving peers and to probe more interesting  and faster peers
+
+5) Increased Pipeline Size - Increased the outstanding request pipeline size from 5 to 10 (later on set it back to default as some memory leak issue was observed at times)
+
+6) Greedy Leech (Requesting Large Pieces) - Increased the requested piece size to 64K from the default 16K, so as to flood the peers bandwidth and download as much 
+data as possible from a peer within a short time by flooding the peers request pipeline with huge chunks
+
+7) Miserly Seed (Sending Smaller Pieces) - Upload pieces of a maximum size of 16K, whereas request downloads of 4 times greater the size
+
+8) Selective Advertising - Announce that we have a particular piece only to the connected peers which have something that interests us
+
+Defensive Tactics :-
+
+1) PropShare Unchoker - Limit the pieces uploaded to a peer proportional to the number of pieces downloaded from that peer in the previous round. 
+This enhances performance and also protects us from other sybil peers from downloading more than what they upload to us
+
+2) Choke Bad peers - Choke the peers that send bad pieces in a given round
+
+3) Choke Misbehaving peers - Choke those peers that request for pieces larger than 16K

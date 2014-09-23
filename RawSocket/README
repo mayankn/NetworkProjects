@@ -1,0 +1,70 @@
+--------------------------------------------------------------------------------------------------------
+README file for Project 4: Raw Socket Implementation : CS5700-Network Fundamentals
+; by team KPN-MN Nov 16 2013
+--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------
+
+This file contains information about how the solution was developed & implemented, and the challenges faced. 
+
+The following information is summarized below:
+
+A) Problem Description
+
+B) Programming Language and Applications used
+
+C) Solution Breakdown
+
+D) Extra Credit
+
+---------------------------------------------------------------------------------------------------------
+A - Problem Description
+--------------------------------------------------------------------------------------------------------- 
+To implement raw sockets and connect to an http server and download the file from the remote location by completely implementing the TCP and IP protocols in the program.
+
+-----------------------------------------------------------------------------------------------------------
+B - Programming Language and Applications used
+-----------------------------------------------------------------------------------------------------------
+
+**-- The Programming Language used for the implementation of this project is C++ --**
+
+Applications used:
+	1) Ubuntu 12.04 64 bit Linux Operating System 
+	2) Eclipse - Integrated Development ToolKit was used as the base workspace environment
+	
+-----------------------------------------------------------------------------------------------------------
+C - Solution Breakdown
+-----------------------------------------------------------------------------------------------------------
+The program implemented the following protocols:
+
+TCP:
+TCP was implemented in the TCP class file.
+A multi-threaded application was implemeted to facilitate full-duplex communication with the server.
+A thread each was created for sending and receiving data simulataneously.
+
+This helped in easily resending non-acked packets even after timeout. 
+It also helped in implemeting in-order delivery of packets.
+
+IP:
+The program creates IP headers and appends it along with the TCP headers.
+The receiver thread was made to bind to an SOCK_RAW/IPPROTO_IP socket.
+
+Http:
+The HTTP class implemets the HTTP protocol similar to what we did in Project 2. 
+This is a simple program that communicates with the given server URL, downloades the page or file 
+and saves it.
+
+We found out that one of the limitations of the program is that the remote connection closes unexpectedly 
+for a file of size greater than 1 MB.
+
+-----------------------------------------------------------------------------------------------------------
+D - Extra Credit
+-----------------------------------------------------------------------------------------------------------
+
+Ethernet (AF_PACKET):
+The program sends using an AF_PACKET raw socket and by-passes the Operating System's layer-2 ethernet stack as well.
+The program first uses the Adress Resolution Protocol (ARP) to resolve the MAC address of the default gateway.
+An ARP packet is sent to the gateway whose response contains its MAC address. 
+We then parse the response to extract the MAC address and then add it to the Ethernet header. 
+The gateway IP address is extracted from the operating system's /proc/net/route file.
+
+One of the challenges we faced was parsing the ARP response and also the retreiving the gateway IP address.

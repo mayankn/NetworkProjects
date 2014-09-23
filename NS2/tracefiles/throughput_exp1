@@ -1,0 +1,20 @@
+#!/bin/bash
+
+num=$(awk 'BEGIN{for(i=1;i<=10;i+=0.5)print i}')
+for i in $num
+#for i in {1..10}
+do
+	echo "CBR: " $i "Mbps"
+	ns ../tclfiles/ns_exp1.tcl TCP  $i
+	echo "tcp"
+	awk -v from=2 -v to=3 -f ns_trace_throughput.awk exp1_output.tr
+	ns ../tclfiles/ns_exp1.tcl TCP/Reno  $i
+        echo "reno"
+	awk -v from=2 -v to=3 -f ns_trace_throughput.awk exp1_output.tr
+	ns ../tclfiles/ns_exp1.tcl TCP/Newreno  $i
+        echo "newreno"
+	awk -v from=2 -v to=3 -f ns_trace_throughput.awk exp1_output.tr
+	ns ../tclfiles/ns_exp1.tcl TCP/Vegas  $i
+   	echo "vegas"
+	awk -v from=2 -v to=3 -f ns_trace_throughput.awk exp1_output.tr
+done

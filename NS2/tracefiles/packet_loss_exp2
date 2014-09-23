@@ -1,0 +1,26 @@
+#!/bin/bash
+
+for i in {1..11}
+do
+	echo "CBR: " $i "Mbps"
+	ns ../tclfiles/ns_exp2.tcl TCP/Reno TCP/Reno $i
+	echo "Reno-N1->N4"
+	awk -v from=0 -v to=1 -v flow=1 -f ns_trace_packet_loss.awk exp2_output.tr
+	echo "Reno-N5->N6"
+	awk -v from=4 -v to=1 -v flow=2 -f ns_trace_packet_loss.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Newreno TCP/Reno $i
+        echo "Newreno-N1->N4"
+	awk -v from=0 -v to=1 -v flow=1 -f ns_trace_packet_loss.awk exp2_output.tr
+	echo "Reno-N5->N6"
+	awk -v from=4 -v to=1 -v flow=2 -f ns_trace_packet_loss.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Vegas TCP/Vegas $i
+        echo "Vegas-N1->N4"
+	awk -v from=0 -v to=1 -v flow=1 -f ns_trace_packet_loss.awk exp2_output.tr
+	echo "Vegas-N5->N6"
+	awk -v from=4 -v to=1 -v flow=2 -f ns_trace_packet_loss.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Newreno TCP/Vegas $i
+   	echo "Newreno-N1->N4"
+	awk -v from=0 -v to=1 -v flow=1 -f ns_trace_packet_loss.awk exp2_output.tr
+	echo "Vegas-N5->N6"
+	awk -v from=4 -v to=1 -v flow=2 -f ns_trace_packet_loss.awk exp2_output.tr
+done

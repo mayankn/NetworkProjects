@@ -1,0 +1,23 @@
+#!/bin/bash
+
+ns ../tclfiles/ns_exp3.tcl TCP/Reno TCPSink DropTail 
+echo "Reno DropTail"
+awk -v from=2 -v to=3 -v fromTime=120 -f ns_trace_throughput_exp3.awk exp3_output.tr
+echo "CBR DropTail"
+awk -v from=2 -v to=5 -v fromTime=150 -f ns_trace_throughput_exp3.awk exp3_output.tr
+ns ../tclfiles/ns_exp3.tcl TCP/Reno TCPSink RED
+echo "Reno RED"
+awk -v from=2 -v to=3 -v fromTime=120 -f ns_trace_throughput_exp3.awk exp3_output.tr
+echo "CBR RED"
+awk -v from=2 -v to=5 -v fromTime=150 -f ns_trace_throughput_exp3.awk exp3_output.tr
+
+ns ../tclfiles/ns_exp3.tcl TCP/Sack1 TCPSink/Sack1 DropTail
+echo "Sack DropTail"
+awk -v from=2 -v to=3 -v fromTime=120 -f ns_trace_throughput_exp3.awk exp3_output.tr
+echo "CBR DropTail"
+awk -v from=2 -v to=5 -v fromTime=150 -f ns_trace_throughput_exp3.awk exp3_output.tr
+ns ../tclfiles/ns_exp3.tcl TCP/Sack1 TCPSink/Sack1 RED
+echo "Sack RED"
+awk -v from=2 -v to=3 -v fromTime=120 -f ns_trace_throughput_exp3.awk exp3_output.tr
+echo "CBR RED"
+awk -v from=2 -v to=5 -v fromTime=150 -f ns_trace_throughput_exp3.awk exp3_output.tr

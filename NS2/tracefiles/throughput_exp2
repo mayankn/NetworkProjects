@@ -1,0 +1,26 @@
+#!/bin/bash
+
+for i in {1..10}
+do
+	echo "CBR: " $i "Mbps"
+	ns ../tclfiles/ns_exp2.tcl TCP/Reno TCP/Reno $i
+	echo "Reno Node3 -> Node4"
+	awk -v from=2 -v to=3 -f ns_trace_throughput.awk exp2_output.tr
+	echo "Reno Node3 -> Node6"
+	awk -v from=2 -v to=5 -f ns_trace_throughput.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Newreno TCP/Reno $i
+        echo "NewReno Node3 -> Node4"
+	awk -v from=2 -v to=3 -f ns_trace_throughput.awk exp2_output.tr
+	echo "Reno Node3 -> Node6"
+	awk -v from=2 -v to=5 -f ns_trace_throughput.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Vegas TCP/Vegas $i
+        echo "Vegas Node3 -> Node4"
+	awk -v from=2 -v to=3 -f ns_trace_throughput.awk exp2_output.tr
+	echo "Vegas Node3 -> Node6"
+	awk -v from=2 -v to=5 -f ns_trace_throughput.awk exp2_output.tr
+	ns ../tclfiles/ns_exp2.tcl TCP/Newreno TCP/Vegas $i
+   	echo "NewReno Node3 -> Node4"
+	awk -v from=2 -v to=3 -f ns_trace_throughput.awk exp2_output.tr
+	echo "Vegas Node3 -> Node6"
+	awk -v from=2 -v to=5 -f ns_trace_throughput.awk exp2_output.tr
+done
