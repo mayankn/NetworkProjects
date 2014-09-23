@@ -1,4 +1,4 @@
-FCNProjects
+NetworkProjects
 ===========
 
-Repository of curricular network programming projects
+Repository consisting of curricular network programming projects
